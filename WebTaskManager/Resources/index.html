@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Web Task Manager</title>
+    <link rel="stylesheet" href="/mdui.min.css" type="text/css"/>
+    <style>
+        .mdui-theme-primary-blue .mdui-color-theme {
+            color:white!important;
+        }
+    </style>
+</head>
+<body class="mdui-theme-primary-blue mdui-theme-accent-blue">
+    <div class="mdui-container" id="app">
+        <div class="mdui-typo" v-if="!isConnected">
+            <h1 class="mdui-text-color-theme">正在连接Web Task Manager...</h1>
+        </div>
+        <div class="mdui-typo" v-if="!logged&&isConnected">
+            <h1 class="mdui-text-color-theme">Web Task Manager</h1>
+            <p>请输入密码以访问Web Task Manager</p>
+            <div :class="'mdui-textfield mdui-textfield-floating-label' + (passwordErr == null ? '' : ' mdui-textfield-invalid')">
+                <label class="mdui-textfield-label">密码</label>
+                <input type="password" class="mdui-textfield-input" v-model="password" />
+                <div class="mdui-textfield-error" v-if="passwordErr != null">{{passwordErr}}</div>
+            </div>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" @click="login">确认</button>
+        </div>
+        <div class="mdui-typo" v-if="logged&&isConnected">
+            <h1 class="mdui-text-color-theme">Web Task Manager进程列表</h1>
+            <h2 v-if="procList.length == 0">进程列表为空...</h2>
+            <div class="mdui-table-fluid" v-if="procList.length != 0">
+                <table class="mdui-table mdui-table-hoverable">
+                    <thead>
+                        <tr>
+                            <td>进程ID</td>
+                            <td>进程名称</td>
+                            <td>标题</td>
+                            <td>CPU</td>
+                            <td>内存</td>
+                            <td>路径</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="proc in procList">
+                            <td>{{proc.ID}}</td>
+                            <td>{{proc.ProcName}}<i v-if="!proc.Responding">（未响应）</i></td>
+                            <td>{{proc.Title}}</td>
+                            <td>{{proc.CPU}} %</td>
+                            <td>{{Math.floor(proc.Memory/1024/1024*100)/100}} MB</td>
+                            <td>{{proc.Folder}}</td>
+                            <td><button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" @click="end(proc.ID);">终结</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/mdui.min.js"></script>
+    <script src="/vue.min.js"></script>
+    <script src="/app.js"></script>
+</body>
+</html>
